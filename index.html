@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slime Soccer - Retro Arcade Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        canvas {
+            display: block;
+            border: 4px solid #2a2a4e;
+            background: #3B82F6;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+        }
+
+        .screen.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 64px;
+            color: #06B6D4;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.8);
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+
+        h2 {
+            font-size: 32px;
+            color: #EF4444;
+            margin-bottom: 40px;
+        }
+
+        .menu-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .menu-section h3 {
+            font-size: 24px;
+            color: #06B6D4;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        button {
+            background: linear-gradient(135deg, #06B6D4, #0891b2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 8px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            min-width: 160px;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.5);
+            background: linear-gradient(135deg, #0891b2, #06B6D4);
+        }
+
+        button.selected {
+            background: linear-gradient(135deg, #EF4444, #dc2626);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        button.selected:hover {
+            background: linear-gradient(135deg, #dc2626, #EF4444);
+        }
+
+        button.large {
+            font-size: 24px;
+            padding: 20px 50px;
+            margin-top: 20px;
+        }
+
+        .duration-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 700px;
+        }
+
+        .controls {
+            margin-top: 40px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .controls strong {
+            color: #06B6D4;
+        }
+
+        .controls .p2 {
+            color: #EF4444;
+        }
+
+        #winner {
+            font-size: 48px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        #finalScore {
+            font-size: 36px;
+            margin: 15px 0;
+            color: #94a3b8;
+        }
+
+        .instructions {
+            max-width: 600px;
+            text-align: left;
+            line-height: 1.8;
+            color: #94a3b8;
+        }
+
+        .instructions h3 {
+            color: #06B6D4;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1200" height="700"></canvas>
+
+        <!-- Main Menu -->
+        <div id="mainMenu" class="screen">
+            <h1>SLIME SOCCER</h1>
+            <h2>Retro Arcade Edition</h2>
+
+            <div class="menu-section">
+                <button id="btnSinglePlayer" class="selected large">Single Player</button>
+                <button id="btnMultiplayer" class="large">Local Multiplayer</button>
+            </div>
+
+            <button id="btnInstructions" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">How to Play</button>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div id="instructionsScreen" class="screen hidden">
+            <h1>HOW TO PLAY</h1>
+
+            <div class="instructions">
+                <h3>Objective</h3>
+                <p>Score more goals than your opponent before time runs out!</p>
+
+                <h3>Player 1 Controls (Red Slime - Right Side)</h3>
+                <p>
+                    <strong>← →</strong> Move Left/Right<br>
+                    <strong>↑</strong> Jump<br>
+                    <strong>↓</strong> Grab/Release Ball<br>
+                    <strong>← → (while grabbing)</strong> Rotate Aim
+                </p>
+
+                <h3>Player 2 Controls (Cyan Slime - Left Side)</h3>
+                <p>
+                    <strong>A D</strong> Move Left/Right<br>
+                    <strong>W</strong> Jump<br>
+                    <strong>S</strong> Grab/Release Ball<br>
+                    <strong>A D (while grabbing)</strong> Rotate Aim
+                </p>
+
+                <h3>Anti-Camping Rule</h3>
+                <p>Don't stay in your own goal for too long or you'll receive a penalty!</p>
+
+                <h3>Gameplay Tips</h3>
+                <p>
+                    • Grab the ball to control it and aim your shot<br>
+                    • Use rotation to change your shooting angle<br>
+                    • Time your jumps to intercept high balls<br>
+                    • Stay active - camping is penalized!
+                </p>
+            </div>
+
+            <button id="btnBackFromInstructions" class="large">Back to Menu</button>
+        </div>
+
+        <!-- Game Setup Screen -->
+        <div id="setupScreen" class="screen hidden">
+            <h1>MATCH SETUP</h1>
+
+            <div class="menu-section">
+                <h3>Select Match Duration</h3>
+                <div class="duration-grid">
+                    <button class="duration-btn" data-time="60">1 Min</button>
+                    <button class="duration-btn" data-time="120">2 Min</button>
+                    <button class="duration-btn" data-time="180">3 Min</button>
+                    <button class="duration-btn" data-time="240">4 Min</button>
+                    <button class="duration-btn" data-time="300">5 Min</button>
+                    <button class="duration-btn" data-time="360">6 Min</button>
+                    <button class="duration-btn" data-time="420">7 Min</button>
+                    <button class="duration-btn" data-time="480">8 Min</button>
+                </div>
+            </div>
+
+            <button id="btnStartMatch" class="large">Start Match</button>
+            <button id="btnBackToMain">Back to Menu</button>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pauseScreen" class="screen hidden">
+            <h1>PAUSED</h1>
+            <button id="btnResume" class="large">Resume</button>
+            <button id="btnQuitToMenu">Quit to Menu</button>
+        </div>
+
+        <!-- End Game Screen -->
+        <div id="endScreen" class="screen hidden">
+            <h1>MATCH OVER</h1>
+            <div id="winner"></div>
+            <div id="finalScore"></div>
+            <button id="btnPlayAgain" class="large">Play Again</button>
+            <button id="btnReturnToMenu">Return to Menu</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
