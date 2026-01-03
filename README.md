@@ -9,7 +9,9 @@ A fast-paced, retro-styled 2D physics-based soccer game featuring bouncy slime c
 
 ## 🎮 Play Now
 
-Simply open `index.html` in any modern web browser to start playing!
+**[Play Online](https://kaynoodle37.github.io/slime-soccer/)** - No installation required!
+
+Or download and open `index.html` in any modern web browser to play locally.
 
 ## ✨ Features
 
@@ -68,7 +70,7 @@ Simply open `index.html` in any modern web browser to start playing!
 ### Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/slime-soccer.git
+git clone https://github.com/kaynoodle37/slime-soccer.git
 cd slime-soccer
 ```
 
